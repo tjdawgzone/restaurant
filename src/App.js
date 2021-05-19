@@ -48,6 +48,7 @@ function App() {
     return (
     <div class="center">
     <CircularProgress color="secondary" />
+    <p>Loading...</p>
     </div>
     );
   }
