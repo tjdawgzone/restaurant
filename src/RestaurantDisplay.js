@@ -1,21 +1,20 @@
 import React, {useEffect, useState} from "react";
+import Card from '@material-ui/core/Card';
 
 function RestaurantDisplay({search}) {
 
     const displayResult = ((result) => {
-        console.log(JSON.stringify(result));
-        try{
-        if(result.opening_hours.open_now){
-            return(<li>{result.name}</li>);
-        }
-    }
-    catch{
-        console.log("No opening hours provided.")
-    }
+            return(
+            <div style={{padding:10}}>
+            <Card elevation={3} style={{display: 'block'}}>
+            <h3 style={{padding:10}}>{result.name}</h3>
+            </Card>
+            </div>
+            );
     });
     return (
         <div >
-        <h1>Here are some open restaraunts and bars in Charlottesville...</h1>
+        <h2>Here's what's open in Charlottesville...</h2>
         {search.results.map((result) => (displayResult(result)))}
         </div>
     )
