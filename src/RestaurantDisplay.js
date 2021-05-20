@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import Card from '@material-ui/core/Card';
 
-function RestaurantDisplay({search}) {
+function RestaurantDisplay({results}) {
 
     const priceDisplay = ((input)=>{
         if(input!=null){
@@ -35,8 +35,8 @@ function RestaurantDisplay({search}) {
 
     const displayResult = ((result) => {
             return(
-            <div style={{padding:10}}>
-            <Card elevation={3} style={{display: 'block'}}>
+            <div style={{padding:10, display:'flex', justifyContent:'center'}}>
+            <Card elevation={3} style={{width: '40vw',height: '13vw'}}>
             <h3 style={{padding:3}}>{result.name}</h3>
             <p>{priceDisplay(result.price_level)}</p>
             <p>{ratingDisplay(result.rating)}</p>
@@ -45,9 +45,9 @@ function RestaurantDisplay({search}) {
             );
     });
     return (
-        <div >
+        <div>
         <h2>Here's what's open in Charlottesville...</h2>
-        {search.results.map((result) => (displayResult(result)))}
+        {results.map((result) => (displayResult(result)))}
         </div>
     )
 }
