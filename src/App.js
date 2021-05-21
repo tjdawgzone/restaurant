@@ -1,41 +1,55 @@
 import React, {useEffect, useState} from "react";
 import './App.css';
-import {CircularProgress, ButtonGroup, Button} from '@material-ui/core';
+import {CircularProgress, ButtonGroup, Button, TextField, Grid} from '@material-ui/core';
 import RestaurantDisplay from './RestaurantDisplay.js';
 import sortResults from './Sort.js'
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 
 
 const API_KEY = process.env.REACT_APP_api_key;
 function App() {
-    const [search, setSearch] = useState(null);
+    const [search, setSearch] = useStateWithCallbackLazy(null);
     const [results, setResults] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [location, setLocation] = useState(null);
     const [firstRun1, setFirstRun1] = useState(true);
-    const firstType = "restaurant";
     const [type,setType] = useState(0);
     const [active,setActive] = useState(true);
+    const [coordinates,setCoordinates] = useStateWithCallbackLazy(null);
+    const [error,setError] = useState("");
+    const firstType = "restaurant";
+    const defaultCoordinates= [38.0293,-78.4767];
 
-    const performSearch = ((type)=>{
+    const performSearch = ((type,coordinates)=>{
       const url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
       url.searchParams.append("key", API_KEY);
       url.searchParams.append("radius", 6440);
       url.searchParams.append("type", type);
       url.searchParams.append("opennow",true);
-      url.searchParams.append("location",[38.0293,-78.4767]);
+      url.searchParams.append("location",coordinates);
       fetch(url)
         .then((resp) => {
           return resp.json();
         })
         .then((obj) => {
-            setSearch(obj);
+            setSearch(obj,()=>{setFirstRun1(false)});
         })
         .then(()=>{
           setActive(true);
         })
-      setFirstRun1(false);
     });
 
 
   useEffect(()=>{
+    if(firstRun1===true&&location!==null){
+      try{
+      setCoordinates([location.results[0].geometry.location.lat,location.results[0].geometry.location.lng]);
+      performSearch(firstType,coordinates);
+      }
+      catch{
+        setError("Invalid Address. Please format your address like this: Street, City, State.")
+      }
+    }
     try{
       if(type===1){
         setResults(sortResults(results,"rating1"));
@@ -73,19 +87,42 @@ function App() {
     }
   });
 
-  if(firstRun1===true){
-    performSearch(firstType);
-    setFirstRun1(false);
+  if(results===null){
+    return (
+      <div class="center">
+        <h1>Where are we eating today?</h1>
+        <Grid container spacing={1}>
+          <Grid item xs={9}>
+            <TextField id="standard-basic" label="Address" style={{display:'flex', justifyContent:'center'}} onChange={evt=>setAddress(evt.target.value)}/>
+          </Grid>
+          <Grid item xs={3}>
+            <Button onClick={()=>{
+            const url = new URL("https://maps.googleapis.com/maps/api/geocode/json?");
+            url.searchParams.append("key", API_KEY);
+            url.searchParams.append("address", address);
+            fetch(url)
+              .then((resp) => {
+                return resp.json();
+              })
+              .then((obj) => {
+                  setLocation(obj);
+              })
+          }}>Search</Button>
+          </Grid>
+        </Grid>
+        <p>{error}</p>
+      </div>
+    );
   }
   else if(results!==null){
   return (
     <div class="centered">
       <h1 style={{fontSize:50,margin:0,padding:15}}>Food Finder 🍽</h1>
         <ButtonGroup style={{paddingTop:0}} variant="contained" color="primary" aria-label="outlined primary button group">
-          <Button onClick={()=>{performSearch("restaurant");}}>Restaurant</Button>
-          <Button onClick={()=>{performSearch("bar");}}>Bar</Button>
-          <Button onClick={()=>{performSearch("cafe");}}>Cafe</Button>
-          <Button onClick={()=>{performSearch("bakery");}}>Bakery</Button>
+          <Button onClick={()=>{performSearch("restaurant",coordinates);}}>Restaurant</Button>
+          <Button onClick={()=>{performSearch("bar",coordinates);}}>Bar</Button>
+          <Button onClick={()=>{performSearch("cafe",coordinates);}}>Cafe</Button>
+          <Button onClick={()=>{performSearch("bakery",coordinates);}}>Bakery</Button>
         </ButtonGroup>
         <br></br>
         <ButtonGroup style={{paddingTop:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">

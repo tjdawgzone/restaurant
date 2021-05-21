@@ -46,7 +46,7 @@ function RestaurantDisplay({results}) {
     });
     return (
         <div>
-        <h2>Here's what's open in Charlottesville...</h2>
+        <h2>Here's what's open right now...</h2>
         {results.map((result) => (displayResult(result)))}
         </div>
     )
