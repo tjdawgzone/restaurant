@@ -48,3 +48,9 @@
     transform: rotate(360deg);
   }
 }
+
+#mapid { height: 300px; }
+.leaflet-container {
+  height: 40vh;
+}
+

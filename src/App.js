@@ -4,6 +4,10 @@ import {CircularProgress, ButtonGroup, Button, TextField, Grid} from '@material-
 import RestaurantDisplay from './RestaurantDisplay.js';
 import sortResults from './Sort.js'
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css';
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import {Icon} from 'leaflet'
 
 
 const API_KEY = process.env.REACT_APP_api_key;
@@ -18,7 +22,6 @@ function App() {
     const [coordinates,setCoordinates] = useStateWithCallbackLazy(null);
     const [error,setError] = useState("");
     const firstType = "restaurant";
-    const defaultCoordinates= [38.0293,-78.4767];
 
     const performSearch = ((type,coordinates)=>{
       const url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
@@ -117,6 +120,8 @@ function App() {
   else if(results!==null){
   return (
     <div class="centered">
+      <head>
+      </head>
       <h1 style={{fontSize:50,margin:0,padding:15}}>Food Finder 🍽</h1>
         <ButtonGroup style={{paddingTop:0}} variant="contained" color="primary" aria-label="outlined primary button group">
           <Button onClick={()=>{performSearch("restaurant",coordinates);}}>Restaurant</Button>
@@ -125,7 +130,7 @@ function App() {
           <Button onClick={()=>{performSearch("bakery",coordinates);}}>Bakery</Button>
         </ButtonGroup>
         <br></br>
-        <ButtonGroup style={{paddingTop:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
+        <ButtonGroup style={{paddingTop:15,paddingBottom:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
           <Button onClick={()=>{setType(1);}}>Ratings (high-low)</Button>
           <Button onClick={()=>{setType(2);}}>Ratings (low-high) </Button>
           <Button onClick={()=>{setType(3);}}>Price (high-low)</Button>
@@ -133,6 +138,21 @@ function App() {
           <Button onClick={()=>{setType(5);}}>Name (A-Z)</Button>
           <Button onClick={()=>{setType(6);}}>Name (Z-A)</Button>
         </ButtonGroup>
+        <div id="mapid" style={{margin:"auto"}}>
+        <MapContainer center={coordinates} zoom={14} scrollWheelZoom={false}>
+          <TileLayer
+            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+      <Marker position={coordinates} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
+      <Popup>
+            <span>
+              Center of Map <br/> Nice.
+            </span>
+        </Popup>
+      </Marker>  
+      </MapContainer>
+       </div>
       <RestaurantDisplay results={results}/>
     </div>
   );
