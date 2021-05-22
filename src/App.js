@@ -4,10 +4,7 @@ import {CircularProgress, ButtonGroup, Button, TextField, Grid} from '@material-
 import RestaurantDisplay from './RestaurantDisplay.js';
 import sortResults from './Sort.js'
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css';
-import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import {Icon} from 'leaflet'
+import MapDisplay from './MapDisplay.js'
 
 
 const API_KEY = process.env.REACT_APP_api_key;
@@ -138,21 +135,7 @@ function App() {
           <Button onClick={()=>{setType(5);}}>Name (A-Z)</Button>
           <Button onClick={()=>{setType(6);}}>Name (Z-A)</Button>
         </ButtonGroup>
-        <div id="mapid" style={{margin:"auto"}}>
-        <MapContainer center={coordinates} zoom={14} scrollWheelZoom={false}>
-          <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-      <Marker position={coordinates} icon={new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}>
-      <Popup>
-            <span>
-              Center of Map <br/> Nice.
-            </span>
-        </Popup>
-      </Marker>  
-      </MapContainer>
-       </div>
+      <MapDisplay coordinates={coordinates} search={search}/>
       <RestaurantDisplay results={results}/>
     </div>
   );

@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import Card from '@material-ui/core/Card';
+import {Card, Link} from '@material-ui/core';
 
 function RestaurantDisplay({results}) {
 
@@ -32,6 +31,13 @@ function RestaurantDisplay({results}) {
         return "No rating available.";
     }
     })
+    
+    const directionsGenerator = ((result)=>{
+        const url = new URL("https://www.google.com/maps/search/?api=1");
+        url.searchParams.append("query", [result.geometry.location.lat,result.geometry.location.lng]);
+        url.searchParams.append("query_place_id", result.place_id);
+        return url;
+    })
 
     const displayResult = ((result) => {
             return(
@@ -40,6 +46,7 @@ function RestaurantDisplay({results}) {
             <h3 style={{padding:3}}>{result.name}</h3>
             <p>{priceDisplay(result.price_level)}</p>
             <p>{ratingDisplay(result.rating)}</p>
+            <Link href={directionsGenerator(result)}>Directions</Link>
             </Card>
             </div>
             );
