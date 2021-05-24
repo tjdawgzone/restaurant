@@ -40,12 +40,12 @@ function MapDisplay(props) {
       url.searchParams.append("query", [result.geometry.location.lat,result.geometry.location.lng]);
       url.searchParams.append("query_place_id", result.place_id);
       return (
-          <Link href={url}>Directions</Link>
+          <Link href={url} target="_blank" rel="noopener noreferrer">Directions</Link>
       )
     })
 
     return (
-        <div id="mapid" style={{margin:"auto"}}>
+        <div id="mapid">
         <MapContainer center={props.coordinates} zoom={14} scrollWheelZoom={false}>
           <TileLayer
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

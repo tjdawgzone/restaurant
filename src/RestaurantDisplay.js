@@ -1,4 +1,4 @@
-import {Card, Link} from '@material-ui/core';
+import {Card, Link, Grid} from '@material-ui/core';
 
 function RestaurantDisplay({results}) {
 
@@ -41,20 +41,24 @@ function RestaurantDisplay({results}) {
 
     const displayResult = ((result) => {
             return(
-            <div style={{padding:10, display:'flex', justifyContent:'center'}}>
-            <Card elevation={3} style={{width: '40vw',height: '13vw'}}>
-            <h3 style={{padding:3}}>{result.name}</h3>
+            <Grid container item xs={4} spacing={3}>
+            <div style={{padding:12}}>
+            <Card elevation={5} style={{width: '30vw',height: '15vw'}}>
+            <h3 style={{paddingTop:"5%"}}>{result.name}</h3>
             <p>{priceDisplay(result.price_level)}</p>
             <p>{ratingDisplay(result.rating)}</p>
-            <Link href={directionsGenerator(result)}>Directions</Link>
+            <Link href={directionsGenerator(result)} target="_blank" rel="noopener noreferrer">Directions</Link>
             </Card>
             </div>
+            </Grid>
             );
     });
     return (
         <div>
         <h2>Here's what's open right now...</h2>
+        <Grid container spacing={1} style={{justifyContent:"center"}}>
         {results.map((result) => (displayResult(result)))}
+        </Grid>
         </div>
     )
 }

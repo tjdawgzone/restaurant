@@ -134,26 +134,27 @@ function App() {
     <div class="centered">
       <head>
       </head>
+      <div style={{display:"flex",justifyContent:"center"}}>
       <h1 style={{fontSize:50,margin:0,padding:15}}>Food Finder 🍽</h1>
-      <Grid container spacing={1} style={{justifyContent:"center"}}>
-        <Grid item xs={3}>
+      <Button onClick={()=>{window.location.reload();}}>Change Address</Button>
+      </div>
+      <div style={{paddingBottom:15, display:"flex",justifyContent:"center"}}>
           <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
             <Button onClick={()=>{performSearch("restaurant",coordinates);}}>Restaurant</Button>
             <Button onClick={()=>{performSearch("bar",coordinates);}}>Bar</Button>
             <Button onClick={()=>{performSearch("cafe",coordinates);}}>Cafe</Button>
             <Button onClick={()=>{performSearch("bakery",coordinates);}}>Bakery</Button>
           </ButtonGroup>
-        </Grid>
-        <Grid item xs={2}>
-          <TextField style={{}} size="small" id="filled-basic" label="Search" variant="outlined" onChange={(evt)=>setKeyword(evt.target.value)} onKeyDown={(evt)=>{
+          <div style={{paddingLeft:4}}>
+          <TextField size="small" id="filled-basic" label="Search" variant="outlined" onChange={(evt)=>setKeyword(evt.target.value)} onKeyDown={(evt)=>{
             if(evt.key === "Enter"){
               performSearch("food",coordinates)
             }
           }}/>
-        </Grid>
-      </Grid>
-        <br></br>
-        <ButtonGroup style={{paddingBottom:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
+          </div>
+      </div>
+      <MapDisplay coordinates={coordinates} search={search}/>
+      <ButtonGroup style={{paddingTop:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
           <Button onClick={()=>{setType(1);}}>Ratings (high-low)</Button>
           <Button onClick={()=>{setType(2);}}>Ratings (low-high) </Button>
           <Button onClick={()=>{setType(3);}}>Price (high-low)</Button>
@@ -161,7 +162,6 @@ function App() {
           <Button onClick={()=>{setType(5);}}>Name (A-Z)</Button>
           <Button onClick={()=>{setType(6);}}>Name (Z-A)</Button>
         </ButtonGroup>
-      <MapDisplay coordinates={coordinates} search={search}/>
       <RestaurantDisplay results={results}/>
     </div>
   );

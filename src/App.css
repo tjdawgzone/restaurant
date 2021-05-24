@@ -49,7 +49,7 @@
   }
 }
 
-#mapid { height: 300px; }
+#mapid { height: "50%"; }
 .leaflet-container {
   height: 40vh;
 }
