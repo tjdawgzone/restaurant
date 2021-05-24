@@ -18,6 +18,7 @@ function App() {
     const [active,setActive] = useState(true);
     const [coordinates,setCoordinates] = useStateWithCallbackLazy(null);
     const [error,setError] = useState("");
+    const [keyword,setKeyword] = useState(null);
     const firstType = "restaurant";
 
     const performSearch = ((type,coordinates)=>{
@@ -27,6 +28,10 @@ function App() {
       url.searchParams.append("type", type);
       url.searchParams.append("opennow",true);
       url.searchParams.append("location",coordinates);
+      if(keyword!==null){
+        url.searchParams.append("keyword", keyword);
+        setKeyword(null);
+      }
       fetch(url)
         .then((resp) => {
           return resp.json();
@@ -39,6 +44,19 @@ function App() {
         })
     });
 
+    const locationLookup = (()=>{
+      const url = new URL("https://maps.googleapis.com/maps/api/geocode/json?");
+      url.searchParams.append("key", API_KEY);
+      url.searchParams.append("address", address);
+      fetch(url)
+        .then((resp) => {
+          return resp.json();
+        })
+        .then((obj) => {
+            setLocation(obj);
+        })
+    })
+
 
   useEffect(()=>{
     if(firstRun1===true&&location!==null){
@@ -47,7 +65,7 @@ function App() {
       performSearch(firstType,coordinates);
       }
       catch{
-        setError("Invalid Address. Please format your address like this: Street, City, State.")
+        setError("Invalid Address. For best results, format your address like this: Street, City, State.")
       }
     }
     try{
@@ -90,23 +108,20 @@ function App() {
   if(results===null){
     return (
       <div class="center">
+        <h1 style={{fontSize:50,margin:0,padding:15}}>Food Finder 🍽</h1>
         <h1>Where are we eating today?</h1>
         <Grid container spacing={1}>
           <Grid item xs={9}>
-            <TextField id="standard-basic" label="Address" style={{display:'flex', justifyContent:'center'}} onChange={evt=>setAddress(evt.target.value)}/>
+            <TextField id="standard-basic" label="Location" style={{display:'flex', justifyContent:'center'}} onChange={(evt)=>setAddress(evt.target.value)}
+            onKeyDown={(evt)=>{
+              if(evt.key==="Enter"){
+                locationLookup();
+              }
+            }}/>
           </Grid>
           <Grid item xs={3}>
             <Button onClick={()=>{
-            const url = new URL("https://maps.googleapis.com/maps/api/geocode/json?");
-            url.searchParams.append("key", API_KEY);
-            url.searchParams.append("address", address);
-            fetch(url)
-              .then((resp) => {
-                return resp.json();
-              })
-              .then((obj) => {
-                  setLocation(obj);
-              })
+              locationLookup();
           }}>Search</Button>
           </Grid>
         </Grid>
@@ -120,14 +135,25 @@ function App() {
       <head>
       </head>
       <h1 style={{fontSize:50,margin:0,padding:15}}>Food Finder 🍽</h1>
-        <ButtonGroup style={{paddingTop:0}} variant="contained" color="primary" aria-label="outlined primary button group">
-          <Button onClick={()=>{performSearch("restaurant",coordinates);}}>Restaurant</Button>
-          <Button onClick={()=>{performSearch("bar",coordinates);}}>Bar</Button>
-          <Button onClick={()=>{performSearch("cafe",coordinates);}}>Cafe</Button>
-          <Button onClick={()=>{performSearch("bakery",coordinates);}}>Bakery</Button>
-        </ButtonGroup>
+      <Grid container spacing={1} style={{justifyContent:"center"}}>
+        <Grid item xs={3}>
+          <ButtonGroup variant="contained" color="primary" aria-label="outlined primary button group">
+            <Button onClick={()=>{performSearch("restaurant",coordinates);}}>Restaurant</Button>
+            <Button onClick={()=>{performSearch("bar",coordinates);}}>Bar</Button>
+            <Button onClick={()=>{performSearch("cafe",coordinates);}}>Cafe</Button>
+            <Button onClick={()=>{performSearch("bakery",coordinates);}}>Bakery</Button>
+          </ButtonGroup>
+        </Grid>
+        <Grid item xs={2}>
+          <TextField style={{}} size="small" id="filled-basic" label="Search" variant="outlined" onChange={(evt)=>setKeyword(evt.target.value)} onKeyDown={(evt)=>{
+            if(evt.key === "Enter"){
+              performSearch("food",coordinates)
+            }
+          }}/>
+        </Grid>
+      </Grid>
         <br></br>
-        <ButtonGroup style={{paddingTop:15,paddingBottom:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
+        <ButtonGroup style={{paddingBottom:15}} size="small" variant="text" color="secondary" aria-label="text primary button group">
           <Button onClick={()=>{setType(1);}}>Ratings (high-low)</Button>
           <Button onClick={()=>{setType(2);}}>Ratings (low-high) </Button>
           <Button onClick={()=>{setType(3);}}>Price (high-low)</Button>
